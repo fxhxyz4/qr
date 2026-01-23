@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <meta
+      name="darkreader"
+      content="NO-DARKREADER-PLUGIN"
+    />
+    <meta
+      name="keywords"
+      content="fxhxyz, javascript, qrcode, qr"
+    />
+    <meta
+      name="description"
+      content="qr code creator website"
+    />
+    <meta
+      name="image"
+      content="./img/favicon.ico"
+    />
+    <meta
+      name="title"
+      content="qr creator"
+    />
+    <meta
+      name="robots"
+      content="index, follow"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/modern-normalize@2.0.0/modern-normalize.css"
+    />
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="./main.css"
+    />
+    <link
+      type="image/x-icon"
+      rel="shortcut icon"
+      href="./img/favicon.ico"
+    />
+    <title>qr</title>
+  </head>
+  <body class="animate__animated animate__fadeIn animate__slower animate__delay-1s">
+    <div class="container">
+      <div class="qr-card">
+        <div class="qr-wrapper">
+          <div
+            class="qr-background bg-1"
+            id="bgLayer"
+          ></div>
+          <div class="qr-content">
+            <div
+              class="avatar"
+              id="avatarIcon"
+            >
+              <div class="avatar-emoji">🎨</div>
+            </div>
+            <div id="qrcode"></div>
+            <div
+              class="username"
+              id="displayUsername"
+            >
+              @username
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="input-group">
+          <label for="textInput">Текст или ссылка</label>
+          <input
+            type="text"
+            id="textInput"
+            placeholder="Введите текст или URL"
+            value="https://t.me/username"
+          />
+        </div>
+
+        <div class="input-group">
+          <label for="usernameInput">Имя пользователя</label>
+          <input
+            type="text"
+            id="usernameInput"
+            placeholder="@username"
+            value="@username"
+          />
+        </div>
+
+        <div class="input-group">
+          <label>Аватар</label>
+          <div class="avatar-mode">
+            <button
+              class="mode-btn active"
+              id="emojiModeBtn"
+            >
+              Эмодзи
+            </button>
+            <button
+              class="mode-btn"
+              id="imageModeBtn"
+            >
+              Картинка
+            </button>
+          </div>
+          <div id="emojiInputWrapper">
+            <input
+              type="text"
+              id="emojiInput"
+              placeholder="🎨"
+              value="🎨"
+              maxlength="2"
+            />
+          </div>
+          <div
+            id="imageInputWrapper"
+            style="display: none"
+          >
+            <div class="file-input-wrapper">
+              <input
+                type="file"
+                id="avatarImage"
+                accept="image/*"
+              />
+              <label
+                for="avatarImage"
+                class="file-input-label"
+                id="fileLabel"
+              >
+                📁 Выберите изображение
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="backgrounds">
+          <h3>Выберите фон</h3>
+          <div class="bg-grid">
+            <div
+              class="bg-option bg-1 active"
+              data-bg="bg-1"
+            ></div>
+            <div
+              class="bg-option bg-2"
+              data-bg="bg-2"
+            ></div>
+            <div
+              class="bg-option bg-3"
+              data-bg="bg-3"
+            ></div>
+            <div
+              class="bg-option bg-4"
+              data-bg="bg-4"
+            ></div>
+            <div
+              class="bg-option bg-5"
+              data-bg="bg-5"
+            ></div>
+            <div
+              class="bg-option bg-6"
+              data-bg="bg-6"
+            ></div>
+            <div
+              class="bg-option bg-7"
+              data-bg="bg-7"
+            ></div>
+            <div
+              class="bg-option bg-8"
+              data-bg="bg-8"
+            ></div>
+            <div
+              class="bg-option bg-9"
+              data-bg="bg-9"
+            ></div>
+            <div
+              class="bg-option bg-10"
+              data-bg="bg-10"
+            ></div>
+            <div
+              class="bg-option bg-11"
+              data-bg="bg-11"
+            ></div>
+            <div
+              class="bg-option bg-12"
+              data-bg="bg-12"
+            ></div>
+            <div
+              class="bg-option bg-13"
+              data-bg="bg-13"
+            ></div>
+            <div
+              class="bg-option bg-14"
+              data-bg="bg-14"
+            ></div>
+            <div
+              class="bg-option bg-15"
+              data-bg="bg-15"
+            ></div>
+            <div
+              class="bg-option bg-16"
+              data-bg="bg-16"
+            ></div>
+            <div
+              class="bg-option bg-17"
+              data-bg="bg-17"
+            ></div>
+            <div
+              class="bg-option bg-18"
+              data-bg="bg-18"
+            ></div>
+            <div
+              class="bg-option bg-19"
+              data-bg="bg-19"
+            ></div>
+            <div
+              class="bg-option bg-20"
+              data-bg="bg-20"
+            ></div>
+          </div>
+        </div>
+
+        <button
+          class="btn"
+          id="downloadBtn"
+        >
+          Скачать QR-код
+        </button>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script
+      type="module"
+      src="./index.js"
+    ></script>
+  </body>
+</html>
