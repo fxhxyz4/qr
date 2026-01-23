@@ -1,6 +1,9 @@
 let qr = null
+let canvas = null
 let avatarImageData = null
 let currentMode = "emoji"
+
+const STORAGE_KEY = "qrAppState"
 
 const textInput = document.getElementById("textInput")
 const usernameInput = document.getElementById("usernameInput")
@@ -23,25 +26,165 @@ const imageModeBtn = document.getElementById("imageModeBtn")
 const emojiInputWrapper = document.getElementById("emojiInputWrapper")
 const imageInputWrapper = document.getElementById("imageInputWrapper")
 
-const gradients = {
-  "bg-1": ["#667eea", "#764ba2"],
-  "bg-2": ["#89f7fe", "#66a6ff"],
-  "bg-3": ["#a8edea", "#fed6e3"],
-  "bg-4": ["#84fab0", "#8fd3f4"],
-  "bg-5": ["#fbc2eb", "#a6c1ee"],
-  "bg-6": ["#fdcbf1", "#e6dee9"],
-  "bg-7": ["#f6d365", "#fda085"],
-  "bg-8": ["#a1c4fd", "#c2e9fb"],
-  "bg-9": ["#ff9a9e", "#fecfef"],
-  "bg-10": ["#ffecd2", "#fcb69f"],
-  "bg-11": ["#ff6e7f", "#bfe9ff"],
-  "bg-12": ["#e0c3fc", "#8ec5fc"],
-  "bg-13": ["#f093fb", "#f5576c"],
-  "bg-14": ["#4facfe", "#00f2fe"],
-  "bg-15": ["#43e97b", "#38f9d7"],
-  "bg-16": ["#fa709a", "#fee140"],
-  "bg-17": ["#30cfd0", "#330867"],
-  "bg-18": ["#a8ff78", "#78ffd6"],
-  "bg-19": ["#ff0844", "#ffb199"],
-  "bg-20": ["#13547a", "#80d0c7"],
+const debounce = (fn, delay = 300) => {
+  let t
+  return (...args) => {
+    clearTimeout(t)
+    t = setTimeout(() => fn(...args), delay)
+  }
 }
+
+const generateQr = text => {
+  const qrEl = document.getElementById("qrcode")
+  if (!qrEl) return
+
+  qrEl.innerHTML = ""
+  canvas = document.createElement("canvas")
+  qrEl.appendChild(canvas)
+
+  qr = new QRious({
+    element: canvas,
+    value: text || "https://t.me/femboyjs",
+    size: 200,
+    level: "H",
+  })
+}
+
+const saveState = () => {
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({
+      text: textInput.value,
+      username: usernameInput.value,
+      emoji: emojiInput.value,
+      mode: currentMode,
+      avatarImageData,
+      bgClass: bgLayer.className,
+    })
+  )
+}
+
+const loadState = () => {
+  const raw = localStorage.getItem(STORAGE_KEY)
+  if (!raw) return
+
+  const state = JSON.parse(raw)
+
+  if (state.text) {
+    textInput.value = state.text
+    generateQr(state.text)
+  } else {
+    generateQr()
+  }
+
+  if (state.username) {
+    usernameInput.value = state.username
+    displayUsername.textContent = state.username
+  }
+
+  if (state.emoji) {
+    emojiInput.value = state.emoji
+  }
+
+  if (state.bgClass) {
+    bgLayer.className = state.bgClass
+    bgOptions.forEach(opt => opt.classList.toggle("active", state.bgClass.includes(opt.dataset.bg)))
+  }
+
+  if (state.mode === "image") {
+    switchToImage()
+  } else {
+    switchToEmoji()
+  }
+
+  if (state.avatarImageData) {
+    avatarImageData = state.avatarImageData
+    avatarIcon.innerHTML = `<img src="${avatarImageData}" alt="Avatar">`
+  }
+}
+
+const switchToEmoji = () => {
+  currentMode = "emoji"
+
+  emojiModeBtn.classList.add("active")
+  imageModeBtn.classList.remove("active")
+
+  emojiInputWrapper.style.display = "block"
+  imageInputWrapper.style.display = "none"
+
+  avatarIcon.innerHTML = `<div class="avatar-emoji">${emojiInput.value || "🎨"}</div>`
+  saveState()
+}
+
+const switchToImage = () => {
+  currentMode = "image"
+  imageModeBtn.classList.add("active")
+
+  emojiModeBtn.classList.remove("active")
+  imageInputWrapper.style.display = "block"
+
+  emojiInputWrapper.style.display = "none"
+  saveState()
+}
+
+textInput.addEventListener(
+  "input",
+  debounce(() => {
+    generateQr(textInput.value)
+    saveState()
+  }, 500)
+)
+
+usernameInput.addEventListener("input", e => {
+  displayUsername.textContent = e.target.value || "@username"
+  saveState()
+})
+
+emojiInput.addEventListener("input", e => {
+  if (currentMode === "emoji") {
+    avatarIcon.innerHTML = `<div class="avatar-emoji">${e.target.value || "🎨"}</div>`
+  }
+
+  saveState()
+})
+
+emojiModeBtn.addEventListener("click", switchToEmoji)
+imageModeBtn.addEventListener("click", switchToImage)
+
+avatarImageInput.addEventListener("change", e => {
+  const file = e.target.files[0]
+  if (!file) return
+
+  const reader = new FileReader()
+
+  reader.onload = ev => {
+    avatarImageData = ev.target.result
+
+    avatarIcon.innerHTML = `<img src="${avatarImageData}">`
+    fileLabel.textContent = `✅ ${file.name}`
+
+    saveState()
+  }
+
+  reader.readAsDataURL(file)
+})
+
+bgOptions.forEach(opt => {
+  opt.addEventListener("click", () => {
+    bgOptions.forEach(o => o.classList.remove("active"))
+    opt.classList.add("active")
+
+    bgLayer.className = `qr-background ${opt.dataset.bg}`
+    saveState()
+  })
+})
+
+downloadBtn.addEventListener("click", () => {
+  const a = document.createElement("a")
+  a.href = canvas.toDataURL("image/png")
+
+  a.download = "qr-code.png"
+  a.click()
+})
+
+loadState()
