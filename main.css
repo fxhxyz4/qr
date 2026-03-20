@@ -381,7 +381,11 @@ h3 {
   body {
     padding: 8px;
   }
- 
+
+  .qr-background {
+    border-radius: 10px;
+  }
+  
   .qr-card {
     padding: 12px;
     border-radius: 12px;
